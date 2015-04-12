@@ -15,7 +15,7 @@ def getHtml(requestUrl):
         print u'请求网址:',requestUrl
         responseHtml = urllib2.urlopen(requestUrl,timeout=50)
         return responseHtml.read()
-    except Exception:
+    except:
         print u'ERROR 请求网址:',requestUrl,u'失败'
 
 # 获取页数
@@ -36,7 +36,7 @@ def makeDir(filePage,dirName):
         else:
             print u'文件夹不存在，创建文件夹:',fileName
             os.mkdir(unicode(fileName,'utf-8'))
-    except Exception:
+    except:
         print u'ERROR 创建文件夹失败',fileName
 
 # 进行图片存储
@@ -51,22 +51,28 @@ def savePic(dirName,picUrl):
             with open(unicode(dirName,'utf-8') + os.sep + os.path.basename(picUrl), "wb") as f:
                 f.write(r)
             f.close()
-    except Exception:
+    except:
         print u'ERROR 图片存储失败'
 
 if __name__ == '__main__':
-    for i in range(1,5000):
-        responseHtml = getHtml('http://sexy.faceks.com/?page='+str(i))
-        # print responseHtml
-        linkList = rePage(responseHtml,REG1)
-        if linkList is None:
-            break
-        else:
-            for pageUrl in linkList:
-                print pageUrl[1]
-                dirName = makeDir(os.getcwd(),os.sep+pageUrl[1].replace('&nbsp;',''))
-                sonLinkList = rePage(getHtml(pageUrl[0]),REG2)
-                for imgFile in sonLinkList:#进行图片储存
-                    savePic(os.getcwd()+os.sep+pageUrl[1].replace('&nbsp;',''),imgFile)
 
+        for i in range(1,5000):
+            try:
+                responseHtml = getHtml('http://sexy.faceks.com/?page='+str(i))
+                # print responseHtml
+                linkList = rePage(responseHtml,REG1)
+                if linkList is None:
+                    break
+                else:
+                    for pageUrl in linkList:
+                        try:
+                            print pageUrl[1]
+                            dirName = makeDir(os.getcwd(),os.sep+pageUrl[1].replace('&nbsp;',''))
+                            sonLinkList = rePage(getHtml(pageUrl[0]),REG2)
+                            for imgFile in sonLinkList:#进行图片储存
+                                savePic(os.getcwd()+os.sep+pageUrl[1].replace('&nbsp;',''),imgFile)
+                        except:
+                            print u'跳过网页：',pageUrl[1]
+            except:
+                print u'跳过第'+str(i)+u'页'
 
