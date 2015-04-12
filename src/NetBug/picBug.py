@@ -9,6 +9,12 @@ import os
 REG1 = '<a class="img" href="(.*)">[\s]*<img src=".*" />[\s]*</a>[\s]*</div>[\s]*<div class="text"><p>(.*)<br /></p>'
 REG2 = '<a href="#" class="img imgclasstag" imggroup=".*" bigimgwidth=".*" bigimgheight=".*" bigimgsrc="(.*)">[\s]*'
 
+#替换window非法命名字符
+def validateTitle(title):
+    rstr = r"[\/\\\:\*\?\"\<\>\|]"  # '/\:*?"<>|'
+    new_title = re.sub(rstr, "", title)
+    return new_title
+
 # 请求的url网址获取html
 def getHtml(requestUrl):
     try:
@@ -34,7 +40,7 @@ def makeDir(filePage,dirName):
         if os.path.exists(unicode(fileName,'utf-8')):
             print u'文件夹已存在：',fileName
         else:
-            print u'文件夹不存在，创建文件夹:',fileName
+            print u'文件夹不存在，创建文件夹:',validateTitle(fileName)
             os.mkdir(unicode(fileName,'utf-8'))
     except:
         print u'ERROR 创建文件夹失败',fileName
@@ -48,7 +54,7 @@ def savePic(dirName,picUrl):
         else:
             r = getHtml(picUrl)
             print u'正在写入：',dirName
-            with open(unicode(dirName,'utf-8') + os.sep + os.path.basename(picUrl), "wb") as f:
+            with open(unicode(dirName,'utf-8') + os.sep + validateTitle(os.path.basename(picUrl)), "wb") as f:
                 f.write(r)
             f.close()
     except:
