@@ -2,7 +2,7 @@
 # -.- coding=utf-8
 
 import os
-import urllib2
+import urllib
 import binascii
 import json
 import datetime
@@ -38,21 +38,29 @@ def getId3Data(filename):
     print u'专辑名称'+audiofile.tag.album
     print u'出品年代'+str(audiofile.tag.recording_date)
     print u'音轨号码'+str(audiofile.tag.track_num)
+    print audiofile.tag.original_release_date
+    print audiofile.tag.recording_date
 
 #修改专辑的音轨号,出品年代，专辑类型
-def modCdInfo(filename):
+def modCdInfo(filename,num,sum):
     audiofile = eyed3.load(filename)
-    audiofile.tag.track_num = (1,1)
-    audiofile.tag.release_date = "1990-11-11"
+    audiofile.tag.track_num =(num,sum) # 音轨号码
+    # audiofile.tag.release_date = "1990-10-11"
+    # audiofile.tag.original_release_date = "1990-10-11"
+    # audiofile.tag.encoding_date = "2002-03"
+    # audiofile.tag.tagging_date = "2012-2-5"
+    # audiofile.tag.recording_date = 2009
+    # audiofile.tag.recording_date = 1990
     audiofile.tag.save()
-
 
 if __name__ == '__main__':
     # file = open('D:\CloudMusic\The Chemical Brothers - Believe.mp3','rb')
     # getid3data(file)
     # print json.dumps(jsonResult, ensure_ascii=False, encoding='gbk')
     # getCdAllInfo('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
-    modCdInfo('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
-    getId3Data('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
-
-
+    # modCdInfo('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
+    # getId3Data('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
+    # modCdInfo('F:\A.R.Y. - Fried Moonlight.mp3')
+    getId3Data('F:\A.R.Y. - Fried Moonlight.mp3')
+    req = urllib.urlopen('http://music.163.com/#/album?id=427271')
+    # print req.read()
