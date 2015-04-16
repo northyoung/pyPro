@@ -2,7 +2,7 @@
 # -.- coding=utf-8
 
 import os
-import urllib
+import urllib2
 import binascii
 import json
 import datetime
@@ -10,6 +10,7 @@ import eyed3
 from eyed3.id3 import Tag
 from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 
+from bs4 import BeautifulSoup
 
 id3_data = {}
 frame_id = ['TIT2', 'TYER', 'TRCK', 'TALB','TPE2' ,'COMM','TPE1']
@@ -61,6 +62,7 @@ if __name__ == '__main__':
     # modCdInfo('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
     # getId3Data('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
     # modCdInfo('F:\A.R.Y. - Fried Moonlight.mp3')
-    getId3Data('F:\A.R.Y. - Fried Moonlight.mp3')
-    req = urllib.urlopen('http://music.163.com/#/album?id=427271')
-    # print req.read()
+    req = urllib2.urlopen('http://music.163.com/#/album?id=427271')
+    soup = BeautifulSoup(req.read())
+    songList = soup.find(id="m-song-list-module")
+    print songList
