@@ -1,4 +1,4 @@
-#AutoNum.py文件说明
+#[AutoNum.py](https://github.com/northyoung/pyPro/blob/master/src/Music163/AutoNum.py)文件说明
 
 ##概述
 
