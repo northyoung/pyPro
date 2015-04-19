@@ -1,6 +1,6 @@
-<h1>pyPro/src/Music163/AutoNum.py文件说明<h1/>
+<h2>pyPro/src/Music163/AutoNum.py文件说明<h2/>
 
-<h2>概述<h2/>
+<h3>概述<h3/>
 
 网易云音乐高品音质音乐下载后音乐本身信息缺失，大多数没有音轨号码，导入ituns，手动整理极为麻烦，<a href="https://github.com/northyoung/pyPro/blob/master/src/Music163/AutoNum.py">/src/Music163/AutoNum.py<a/> 从网易云音乐中获取音轨号码，自动检测文件夹下mp3文件，修改文件音轨号码。<br/>
 文件使用方法：<br/>
@@ -11,7 +11,7 @@
 4.调用getMusicInfo()传入kid_a <br/>
 5.done
 
-<h2>使用的第三方库<h2/>
+<h3>使用的第三方库<h3/>
 
 <a href="https://pypi.python.org/pypi/chardet">chardet<a/>
 <a href="http://eyed3.nicfit.net/">eyed3<a/>
