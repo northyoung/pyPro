@@ -1,4 +1,4 @@
-#pyPro/src/Music163/AutoNum.py文件说明
+#AutoNum.py文件说明
 
 ##概述
 
