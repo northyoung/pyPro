@@ -13,6 +13,7 @@ from eyed3.id3 import Tag
 from eyed3.id3 import ID3_V1_0, ID3_V1_1, ID3_V2_3, ID3_V2_4
 
 from bs4 import BeautifulSoup
+import re
 
 id3_data = {}
 frame_id = ['TIT2', 'TYER', 'TRCK', 'TALB','TPE2' ,'COMM','TPE1']
@@ -38,8 +39,8 @@ def getCdAllInfo(filename):
 def getId3Data(filename):
     audiofile = eyed3.load(filename)
     print u'音乐作者'+audiofile.tag.artist
-    print u'音乐名称'+audiofile.tag.title
     print u'专辑名称'+audiofile.tag.album
+    print u'音乐名称'+audiofile.tag.title
     print u'出品年代'+str(audiofile.tag.recording_date)
     print u'音轨号码'+str(audiofile.tag.track_num)
     print audiofile.tag.original_release_date
@@ -47,9 +48,11 @@ def getId3Data(filename):
 
 #修改专辑的音轨号,出品年代，专辑类型
 # exp:modCdInfo('D:\CloudMusic\Sabrepulse - Horizons (Remix).mp3')
-def modCdInfo(filename,num,sum):
+def modCdInfo(filename,num,sum,albumname,songname):
     audiofile = eyed3.load(filename)
     audiofile.tag.track_num =(num,sum) # 音轨号码
+    audiofile.tag.title = songname.decode('gbk')
+    # audiofile.tag.album = albumname.decode('gbk')
     # audiofile.tag.release_date = "1990-10-11"
     # audiofile.tag.original_release_date = "1990-10-11"
     # audiofile.tag.encoding_date = "2002-03"
@@ -57,6 +60,12 @@ def modCdInfo(filename,num,sum):
     # audiofile.tag.recording_date = 2009
     # audiofile.tag.recording_date = 1990
     audiofile.tag.save()
+
+# 对获取主页面进行剪辑
+def rePage(responseHtml,reg):
+    pattern = re.compile(reg)
+    linkList = re.findall(pattern,responseHtml)#返回了页面图片列表
+    return linkList
 
 #向服务器发送获取专辑信息的请求
 #url:请求的专辑url地址
@@ -78,6 +87,7 @@ def requestMusicInfo(url):
     req.add_header('User-Agent',headers['User-Agent'])
     req.add_header('Proxy-Connection',headers['Proxy-Connection'])
     req.add_header('Cookie',headers['Cookie'])
+    print u'请求网址'+url
     response = urllib2.urlopen(req)
     html = response.read()
     # print html
@@ -87,20 +97,19 @@ def requestMusicInfo(url):
 #url:请求的专辑url地址
 def getMusicInfo(url):
     outList = []
-    soup = BeautifulSoup(requestMusicInfo(url))
+    REG = '<div class="text"><span title=".*"><a class="s-fc3" href=".*">(.*)</a></span></div>'
+    html = requestMusicInfo(url)
+    soup = BeautifulSoup(html)
     CdInfo = soup.find("h2","f-ff2").get_text()
     print u'专辑名称:',CdInfo
     # songListHtml = soup.find(id="m-song-list-module") #歌曲列表
     songList = soup.find("div","f-cb").findAll("span","txt")
-    artistList = soup.findAll("div","text")
-    for link in artistList:
-        link
-    print artistList
+    artistList = rePage(html,REG)
     for i in range(len(songList)):
         songName = BeautifulSoup(str(songList[i])).get_text().strip()#获取歌曲名称
         artistName = BeautifulSoup(str(artistList[i])).get_text().strip()#获取歌曲艺术家
         print u'第',str(i+1),u'首:',artistName," - ",songName
-        outList.append(" - "+songName.encode('gbk'))
+        outList.append((artistName+" - "+songName+".mp3").encode('gbk'))
     return outList
 
 #查找本地文件夹下面的音乐文件，进行匹配和名称修改
@@ -112,12 +121,20 @@ def getLocalFile(dirName,MusicList):
     print dirNameList
     for count in range(len(MusicList)):
         for fileName in dirNameList:
-            if MusicList[count].decode('utf-8') is fileName:
-                print count,u' is ',fileName
+            if MusicList[count] == fileName:
+                print count+1,u' is ',fileName
+                removeMp3FileName = fileName.strip(".mp3")
+                tmpFileList = removeMp3FileName.split("-")
+                print tmpFileList
+                modCdInfo(dirName+os.sep+fileName,count+1,len(MusicList),tmpFileList[0].strip(),tmpFileList[1].strip())
+                getId3Data(dirName+os.sep+fileName)
 
 if __name__ == '__main__':
     kid_a = 'http://music.163.com/album?id=2065424' #KID A -- radiohead
-
+    come_with_us = 'http://music.163.com/album?id=2061052' #COME WITH US -- the chemical brother
+    ok_computer = 'http://music.163.com/album?id=2060534' #OK COMPUTER --radiohead
+    the_bends = 'http://music.163.com/album?id=1720840' #THE_BENDS --radiohead
+    push_the_button = 'http://music.163.com/album?id=2018192' #Push The Button -- The Chemical Brothers
     dirName = 'F:\CloudMusic' #文件路径
-    fileList = getMusicInfo(kid_a)
+    fileList = getMusicInfo(push_the_button)
     getLocalFile(dirName,fileList)
